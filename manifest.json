@@ -1,22 +1,26 @@
 {
-    "manifest_version": 3,
-    "name": "Passport Pal Travel Document Checklist",
-    "version": "1.0",
-    "description": "Scrapes flight information from your email and provides a checklist of required travel documents using GPT.",
-    "permissions": ["activeTab", "identity", "https://mail.google.com/", "storage"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://mail.google.com/*"],
-        "js": ["content.js"]
-      }
-    ],
-    "oauth2": {
-      "client_id": "225636756107-suuk4420mo8781qh72m7r5gdobtef9s7.apps.googleusercontent.com",
-      "scopes": [
-        "https://www.googleapis.com/auth/gmail.readonly"
-      ]
+  "manifest_version": 3,
+  "name": "Passport Pal Travel Document Checklist",
+  "version": "1.0",
+  "description": "Scrapes flight information from your email and provides a checklist of required travel documents using GPT.",
+  "permissions": ["activeTab", "identity", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"]
     }
+  ],
+  "oauth2": {
+    "client_id": "225636756107-suuk4420mo8781qh72m7r5gdobtef9s7.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ]
+  },
+  "action": {
+    "default_popup": "popup.html"
+    
   }
+}
