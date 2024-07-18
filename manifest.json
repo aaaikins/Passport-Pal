@@ -1,16 +1,16 @@
 {
-    "manifest_version": 3,
-    "name": "Passport Pal Travel Document Checklist",
-    "version": "1.0",
-    "description": "Scrapes flight information from your email and provides a checklist of required travel documents using GPT.",
-    "permissions": ["activeTab", "identity", "storage"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://mail.google.com/*"],
-        "js": ["content.js"]
+  "manifest_version": 3,
+  "name": "Passport Pal Travel Document Checklist",
+  "version": "1.0",
+  "description": "Scrapes flight information from your email and provides a checklist of required travel documents using GPT.",
+  "permissions": ["activeTab", "identity", "storage", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"]
     }
   ],
     "oauth2": {
