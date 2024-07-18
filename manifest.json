@@ -13,11 +13,11 @@
       "js": ["content.js"]
     }
   ],
-  "oauth2": {
-    "client_id": "225636756107-suuk4420mo8781qh72m7r5gdobtef9s7.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/gmail.readonly"
-    ]
+    "oauth2": {
+      "client_id": "225636756107-5vlr6i5iihc821s96ml8lk6tvq6jbqoe.apps.googleusercontent.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/gmail.readonly"
+      ]
   },
   "action": {
     "default_popup": "popup.html"

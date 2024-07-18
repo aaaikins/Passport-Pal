@@ -2,7 +2,6 @@
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Extension installed');
 });
-
 // Listener for when the extension icon is clicked
 chrome.action.onClicked.addListener((tab)=> {
   // Request an OAuth token interactively
@@ -27,4 +26,3 @@ chrome.action.onClicked.addListener((tab)=> {
     });
   });
 });
-
