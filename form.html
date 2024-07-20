@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Passport Pal</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Passport Pal</h1>
+        <form action="/preview" method="post" id="travel-form">
+            <label for="nationality">Nationality:</label>
+            <input type="text" id="nationality" name="nationality" required>
+
+            <label for="passport_expiration">Passport Expiration Date:</label>
+            <input type="date" id="passport_expiration" name="passport_expiration" required>
+
+            <label for="leaving_from">Leaving from:</label>
+            <input type="text" id="leaving_from" name="leaving_from" required>
+
+            <label for="going_to">Going to:</label>
+            <input type="text" id="going_to" name="going_to" required>
+
+            <label for="departure_date">Departure Date:</label>
+            <input type="date" id="departure_date" name="departure_date" required>
+
+            <label for="visa_type">Visa Type:</label>
+            <input type="text" id="visa_type" name="visa_type" required>
+
+            <label for="purpose_of_travel">Purpose of Travel:</label>
+            <input type="text" id="purpose_of_travel" name="purpose_of_travel" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Modal for processing -->
+    <div id="processing-modal" class="modal">
+        <div class="modal-content">
+            <p>Getting travel documents information...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("travel-form").addEventListener("submit", function() {
+            document.getElementById("processing-modal").style.display = "block";
+        });
+    </script>
+</body>
+</html>
