@@ -1,25 +1,30 @@
+/* Base styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    font-family: "Roboto", Arial, sans-serif;
+    background-color: #f9f9f9;
     color: #333;
     margin: 0;
     padding: 0;
 }
 
+/* Container styles */
 .container {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 
+/* Header styles */
 h1 {
     text-align: center;
-    color: #4CAF50;
+    color: #007bff;
+    font-size: 24px;
 }
 
+/* Form styles */
 form {
     display: flex;
     flex-direction: column;
@@ -28,6 +33,7 @@ form {
 label {
     margin-bottom: 5px;
     color: #555;
+    font-weight: bold;
 }
 
 input, button {
@@ -38,33 +44,43 @@ input, button {
     font-size: 16px;
 }
 
+input:focus, button:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Button styles */
 button {
-    background-color: #4CAF50;
+    background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
+/* Result and error message styles */
 .result, .error {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
-    border-left: 6px solid #4CAF50;
+    border-left: 6px solid #007bff;
 }
 
 .error {
     border-left-color: #f44336;
 }
 
+/* Preformatted text styles */
 pre {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
 
+/* Modal styles */
 .modal {
     display: none;
     position: fixed;
@@ -74,8 +90,7 @@ pre {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     padding-top: 60px;
 }
 
@@ -86,4 +101,20 @@ pre {
     border: 1px solid #888;
     width: 80%;
     text-align: center;
+}
+
+/* Back link styles */
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.back-link:hover {
+    background-color: #0056b3;
 }

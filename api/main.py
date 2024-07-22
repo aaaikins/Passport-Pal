@@ -1,9 +1,9 @@
+import asyncio
 import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
-from fastapi import FastAPI, Form, Request
+from fastapi import BackgroundTasks, FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -12,9 +12,12 @@ from openai import OpenAI
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timedelta
+from twilio.rest import Client
+
 
 # Load environment variables
-load_dotenv()
+load_dotenv("./venv/.env")
 
 app = FastAPI()
 
@@ -28,8 +31,8 @@ app.add_middleware(
 )
 
 # Mount static files and templates directory
-app.mount("/static", StaticFiles(directory="."), name="static")
-templates = Jinja2Templates(directory=".")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
 class TravelData(BaseModel):
@@ -48,7 +51,6 @@ def generate_checklist(data: TravelData):
         f"Create a detailed and specific travel documents checklist for a student studying in the US. "
         f"The checklist should ensure the student has all necessary documents to travel without stress. "
         f"Consider the student's nationality, passport expiration date, visa type, and purpose of travel. "
-        f"Provide any additional information if a specific Visa type is need for the trip, feel free to add accurate links"
         f"Provide the checklist in the following format: each item should be preceded by a checkmark emoji. "
         f"Use clear and concise language.\n\n"
         f"Nationality: {data.nationality}\n"
@@ -63,9 +65,11 @@ def generate_checklist(data: TravelData):
         f"✅ Item 2\n"
         f"...\n\n"
         f"Provide the detailed checklist below: "
+        f"Provide any additional information if a specific document is need for the trip "
+        f"and the step by step process to acquire it, feel free to add accurate links"
     )
     try:
-        client = OpenAI(api_key='sk-proj-loUZ0f123OisT7bYwoUIT3BlbkFJf0ldijMgB4RDTn1ZNAcT')
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         completion = client.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -79,28 +83,22 @@ def generate_checklist(data: TravelData):
         plain_text_content = (content.replace("### ", "").replace("**", "")
                               .replace("-", "").replace("  ", " ")
                               .replace("#","")).replace("*", "")
-        with open("checklist.txt", "w") as checklist:
-            checklist.write(plain_text_content)
-
-        with open("checklist.txt", "r") as checklist:
-            text = checklist.readlines()[1:]
-            text = "".join(text)
-        return text
+        return plain_text_content
 
     except Exception as e:
         return str(e)
 
 
-def send_email(to_email: str, checklist: str):
+async def send_email(to_email: str, checklist: str):
     from_email = "passportpal.business@gmail.com"
-    password = "xjje uovq hryk wqph"
+    password = os.environ.get("EMAIL_PASSWORD")
 
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email
     msg['Subject'] = "Your Travel Checklist"
 
-    body = f'Hey, \n{checklist}'
+    body = f'Hey Passport Pal User, \n\n{checklist}'
     msg.attach(MIMEText(body, 'plain'))
 
     try:
@@ -114,6 +112,34 @@ def send_email(to_email: str, checklist: str):
         return f"Failed to send email: {e}"
 
 
+def send_whatsapp_reminder(phone_number: str, message: str):
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+    from_whatsapp_number = 'whatsapp:+18444991914'
+    to_whatsapp_number = f'whatsapp: {phone_number}'
+
+    client = Client(account_sid, auth_token)
+
+    try:
+        client.messages.create(body=message,
+                               from_=from_whatsapp_number,
+                               to=to_whatsapp_number)
+        return "WhatsApp reminder sent successfully!"
+    except Exception as e:
+        return f"Failed to send WhatsApp reminder: {e}"
+
+
+def schedule_whatsapp_reminder(phone_number: str, departure_date: str):
+    departure = datetime.strptime(departure_date, "%Y-%m-%d")
+    reminder_date = departure - timedelta(days=3)
+    reminder_message = "Reminder: Your travel date is approaching. Make sure you have all your documents ready!"
+
+    # Calculate the delay for scheduling the reminder
+    delay = (reminder_date - datetime.now()).total_seconds()
+    if delay > 0:
+        asyncio.get_event_loop().call_later(delay, send_whatsapp_reminder, phone_number, reminder_message)
+
+
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
@@ -121,6 +147,7 @@ async def read_form(request: Request):
 
 @app.post("/preview", response_class=HTMLResponse)
 async def preview_form(request: Request,
+                       background_tasks: BackgroundTasks,
                        nationality: str = Form(...),
                        passport_expiration: str = Form(...),
                        leaving_from: str = Form(...),
@@ -128,7 +155,8 @@ async def preview_form(request: Request,
                        departure_date: str = Form(...),
                        email: str = Form(...),
                        visa_type: str = Form(...),
-                       purpose_of_travel: str = Form(...)):
+                       purpose_of_travel: str = Form(...),
+                       phone_number: str = Form(...)):
     try:
         validate_email(email)
     except EmailNotValidError as e:
@@ -142,15 +170,19 @@ async def preview_form(request: Request,
         departure_date=departure_date,
         email=email,
         visa_type=visa_type,
-        purpose_of_travel=purpose_of_travel
+        purpose_of_travel=purpose_of_travel,
+        phone_number=phone_number
     )
 
     checklist = generate_checklist(data)
+
+    # Schedule WhatsApp reminder
+    schedule_whatsapp_reminder(phone_number, departure_date)
 
     return templates.TemplateResponse("preview.html", {"request": request, "checklist": checklist, "email": email})
 
 
 @app.post("/send_email", response_class=HTMLResponse)
 async def send_email_form(request: Request, email: str = Form(...), checklist: str = Form(...)):
-    email_status = send_email(email, checklist)
+    email_status = await send_email(email, checklist)
     return templates.TemplateResponse("result.html", {"request": request, "email_status": email_status})
