@@ -1,0 +1,42 @@
+{
+  "name": "passport-pal",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@vercel/analytics": "^1.2.0",
+    "openai": "^4.28.0",
+    "@langchain/openai": "^0.0.25",
+    "@langchain/core": "^0.1.52",
+    "langchain": "^0.1.30",
+    "twilio": "^5.0.0",
+    "nodemailer": "^6.9.10",
+    "zod": "^3.22.4",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.344.0",
+    "recharts": "^2.12.0",
+    "date-fns": "^3.3.0",
+    "@tensorflow/tfjs": "^4.17.0",
+    "@tensorflow/tfjs-node": "^4.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/nodemailer": "^6.4.14",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.0"
+  }
+}
