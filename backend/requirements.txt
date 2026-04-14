@@ -1,0 +1,11 @@
+fastapi~=0.111.1
+uvicorn[standard]
+openai~=1.35.15
+python-dotenv~=1.0.1
+pydantic~=2.8.2
+twilio~=9.2.3
+email-validator
+aiosmtplib
+slowapi
+redis[asyncio]
+celery[redis]

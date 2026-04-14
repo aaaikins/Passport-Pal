@@ -4,20 +4,31 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import TravelForm from '@/components/TravelForm';
 import ChecklistDisplay from '@/components/ChecklistDisplay';
-import { AIResponse } from '@/lib/types';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import { AIResponse, TravelData } from '@/lib/types';
+import { performPredictiveAnalysis, generateOptimalTimeline, PredictiveAnalysis, OptimalTimeline } from '@/lib/ml-service';
 import { Plane, Globe, Shield } from 'lucide-react';
 
 export default function Home() {
   const [checklist, setChecklist] = useState<AIResponse | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [travelData, setTravelData] = useState<TravelData | null>(null);
+  const [analysis, setAnalysis] = useState<PredictiveAnalysis | null>(null);
+  const [timeline, setTimeline] = useState<OptimalTimeline | null>(null);
 
-  const handleChecklistGenerated = (response: AIResponse) => {
+  const handleChecklistGenerated = async (response: AIResponse, formData: TravelData) => {
     setChecklist(response);
-    setLoading(false);
+    setTravelData(formData);
+    const predictive = await performPredictiveAnalysis(formData);
+    const optimalTimeline = generateOptimalTimeline(formData.departureDate, formData.visaType);
+    setAnalysis(predictive);
+    setTimeline(optimalTimeline);
   };
 
   const handleReset = () => {
     setChecklist(null);
+    setTravelData(null);
+    setAnalysis(null);
+    setTimeline(null);
   };
 
   return (
@@ -100,13 +111,27 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <TravelForm
-              onChecklistGenerated={handleChecklistGenerated}
-              setLoading={setLoading}
-            />
+            <TravelForm onChecklistGenerated={handleChecklistGenerated} />
           </motion.div>
         ) : (
-          <ChecklistDisplay checklist={checklist} onReset={handleReset} />
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <ChecklistDisplay
+                checklist={checklist}
+                email={travelData?.email ?? ''}
+                onReset={handleReset}
+              />
+            </div>
+            {analysis && timeline && (
+              <div className="lg:col-span-1">
+                <AnalyticsDashboard
+                  analysis={analysis}
+                  timeline={timeline}
+                  riskScore={checklist.riskScore ?? 0}
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
 
